@@ -19,21 +19,21 @@ public class EventAggregatorService {
         List<Event> events = new ArrayList<>();
 
         for (EventSourceStrategy source : eventSources) {
-
             try {
                 List<Event> todaysEvents = source.getTodaysEvents();
 
                 if (!todaysEvents.isEmpty()) {
                     events.addAll(todaysEvents);
                     log.info("Added {} events for {}", events.size(), source);
-                } else
+                } else {
                     log.info("No events found for {}", source);
 
-            } catch(Exception e){
+                }
+            } catch(Exception e) {
                 log.error("Failed to fetch Events from {}: {}", source.getName(), e.getMessage(), e);
             }
         }
-        return removeDuplicates(events);
+        return events;
     }
 
     private List<Event> removeDuplicates(List<Event> events) {
