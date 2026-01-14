@@ -1,13 +1,13 @@
 package com.ColumbusEventAlertService.refactor.strategy;
 
-import com.ColumbusEventAlertService.models.Event;
+import com.ColumbusEventAlertService.refactor.models.Event;
 
 import java.util.List;
 
 public interface EventSourceStrategy {
 
-    List<Event> getTodaysEvents() throws Exception;
+    List<Event> fetchTodaysEvents() throws Exception;
 
-    String getName();
+    String getLocationName();
 
 }

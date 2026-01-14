@@ -24,7 +24,7 @@ public class Event {
         this.interesting = builder.interesting;
     }
 
-    public Builder build() {
+    public static Builder builder() {
         return new Builder();
     }
 

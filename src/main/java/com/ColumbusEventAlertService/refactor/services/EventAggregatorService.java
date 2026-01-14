@@ -1,6 +1,6 @@
 package com.ColumbusEventAlertService.refactor.services;
 
-import com.ColumbusEventAlertService.models.Event;
+import com.ColumbusEventAlertService.refactor.models.Event;
 import com.ColumbusEventAlertService.refactor.strategy.EventSourceStrategy;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -20,17 +20,16 @@ public class EventAggregatorService {
 
         for (EventSourceStrategy source : eventSources) {
             try {
-                List<Event> todaysEvents = source.getTodaysEvents();
+                List<Event> todaysEvents = source.fetchTodaysEvents();
 
                 if (!todaysEvents.isEmpty()) {
                     events.addAll(todaysEvents);
                     log.info("Added {} events for {}", events.size(), source);
                 } else {
                     log.info("No events found for {}", source);
-
                 }
             } catch(Exception e) {
-                log.error("Failed to fetch Events from {}: {}", source.getName(), e.getMessage(), e);
+                log.error("Failed to fetch Events from {}: {}", source.getLocationName(), e.getMessage(), e);
             }
         }
         return events;
