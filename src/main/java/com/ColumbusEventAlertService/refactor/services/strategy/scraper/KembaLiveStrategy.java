@@ -42,15 +42,13 @@ public class KembaLiveStrategy implements EventSourceStrategy {
                 return Collections.emptyList();
             }
 
-            int eventCounter = 0;
             for (Element element : eventElements) {
                 Event event = parseEvent(element);
                 if (event != null && event.getDate().equals(LocalDate.now())) {
                     todaysEvents.add(event);
-                    eventCounter++;
                 }
             }
-            log.info("Found {} events today for {}", eventCounter, getLocationName());
+            log.info("Found {} events today for {}", todaysEvents.size(), getLocationName());
 
             return todaysEvents;
 
