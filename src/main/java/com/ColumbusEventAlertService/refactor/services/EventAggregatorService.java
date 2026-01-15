@@ -16,15 +16,15 @@ public class EventAggregatorService {
         log.info("Fetching Today's Events");
         //todo get all sources
         List<EventSourceStrategy> eventSources = new ArrayList<>();
-        List<Event> events = new ArrayList<>();
+        List<Event> todaysEvents = new ArrayList<>();
 
         for (EventSourceStrategy source : eventSources) {
             try {
-                List<Event> todaysEvents = source.fetchTodaysEvents();
+                List<Event> sourceEventsToday = source.fetchTodaysEvents();
 
-                if (!todaysEvents.isEmpty()) {
-                    events.addAll(todaysEvents);
-                    log.info("Added {} events for {}", events.size(), source);
+                if (!sourceEventsToday.isEmpty()) {
+                    todaysEvents.addAll(sourceEventsToday);
+                    log.info("Added {} events for {}", todaysEvents.size(), source);
                 } else {
                     log.info("No events found for {}", source);
                 }
@@ -32,7 +32,7 @@ public class EventAggregatorService {
                 log.error("Failed to fetch Events from {}: {}", source.getLocationName(), e.getMessage(), e);
             }
         }
-        return events;
+        return todaysEvents;
     }
 
     private List<Event> removeDuplicates(List<Event> events) {

@@ -1,65 +1,25 @@
 package com.ColumbusEventAlertService.refactor.services.strategy.scraper;
 
 import com.ColumbusEventAlertService.refactor.models.Event;
-import com.ColumbusEventAlertService.refactor.strategy.EventSourceStrategy;
-import com.ColumbusEventAlertService.services.JsoupService;
 import lombok.extern.slf4j.Slf4j;
-import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import java.io.IOException;
 import java.time.LocalDate;
 import java.time.MonthDay;
 import java.time.Year;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 @Slf4j
-public class KembaLiveStrategy implements EventSourceStrategy {
-    JsoupService jsoupService;
-    String url;
+public class KembaLiveStrategy extends AbstractWebScraperStrategy {
 
-    public KembaLiveStrategy(JsoupService jsoupService, String url) {
-        this.jsoupService = jsoupService;
-        this.url = url;
+    public KembaLiveStrategy(String locationName, String locationUrl) {
+        super(locationName, locationUrl);
+
     }
 
-    @Override
-    public List<Event> fetchTodaysEvents() throws Exception {
-        log.info("Fetching todays events for {}", getLocationName());
-
-        try {
-            ArrayList<Event> todaysEvents = new ArrayList<>();
-            Document document = fetchDocument();
-            Elements eventElements = findAllElements(document);
-
-            if (eventElements.isEmpty()) {
-                log.info("No events found for {}", getLocationName());
-                return Collections.emptyList();
-            }
-
-            for (Element element : eventElements) {
-                Event event = parseEvent(element);
-                if (event != null && event.getDate().equals(LocalDate.now())) {
-                    todaysEvents.add(event);
-                }
-            }
-            log.info("Found {} events today for {}", todaysEvents.size(), getLocationName());
-
-            return todaysEvents;
-
-        } catch ( Exception e ) {
-            log.error("Error while fetching events for {}", getLocationName(), e);
-        }
-
-        return Collections.emptyList();
-    }
-
-    private Event parseEvent(Element element) throws Exception {
+    protected Event parseEvent(Element element) throws Exception {
         String eventName = extractEventName(element.select("h2").get(0));
         Elements dateTimeElements = element.select(".doors-time");
 
@@ -87,16 +47,11 @@ public class KembaLiveStrategy implements EventSourceStrategy {
                     .build();
     }
 
-    private Elements findAllElements(Document document) {
-        Elements events = document.select(".events-list").get(0).children();
-        return events;
+    protected Elements findAllElements(Document document) {
+        return document.select(".events-list").get(0).children();
     }
 
-    private Document fetchDocument() throws IOException {
-        return Jsoup.connect(url).get();
-    }
-
-    private String extractEventName(Element element) throws Exception {
+    protected String extractEventName(Element element) throws Exception {
         String eventName = extractText(element, "h2");
         if(eventName == null || eventName.isEmpty()) {
             log.error("No event name found for {}", getLocationName());
@@ -107,7 +62,7 @@ public class KembaLiveStrategy implements EventSourceStrategy {
     }
 
 
-    private LocalDate extractEventDate(String dateText) {
+    protected LocalDate extractEventDate(String dateText) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMMM d");
         MonthDay monthDay = MonthDay.parse(dateText, formatter);;
         int year = Year.now().getValue();
@@ -120,14 +75,5 @@ public class KembaLiveStrategy implements EventSourceStrategy {
         return date;
     }
 
-    private String extractText(Element parent, String cssSelector) throws Exception {
-        Element element = parent.selectFirst(cssSelector);
-        return element != null ? element.text().trim() : null;
-    }
-
-    @Override
-    public String getLocationName() {
-        return "Kemba Live";
-    }
 
 }
