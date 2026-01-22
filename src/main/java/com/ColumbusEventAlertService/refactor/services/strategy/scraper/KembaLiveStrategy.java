@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.time.LocalDate;
 import java.time.MonthDay;
@@ -14,9 +15,10 @@ import java.time.format.DateTimeFormatter;
 @Slf4j
 public class KembaLiveStrategy extends AbstractWebScraperStrategy {
 
-    public KembaLiveStrategy(String locationName, String locationUrl) {
+    public KembaLiveStrategy(
+            @Value("${venue-name.kemba}") String locationName,
+            @Value("${url.kemba}") String locationUrl) {
         super(locationName, locationUrl);
-
     }
 
     protected Event parseEvent(Element element) throws Exception {
