@@ -151,4 +151,9 @@ public class DateUtilTest {
     void shouldThrowWhenDateNull() {
         assertThrows(RuntimeException.class, () -> DateUtil.parseMonthDayWithYear(null, "MMMM d"));
     }
+
+    @Test
+    void shouldThrowWhenInvalidMonthAbbreviation() {
+        assertThrows(RuntimeException.class, () -> DateUtil.parseMonthDayWithYear("Sma 17", "MMMM d"));
+    }
 }
