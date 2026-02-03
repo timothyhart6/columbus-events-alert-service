@@ -1,5 +1,6 @@
 package com.ColumbusEventAlertService.refactor.util;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -16,6 +17,7 @@ public class DateUtilTest {
 
     @ParameterizedTest
     @ValueSource(strings = {"January 1", "February 20", "July 10", "December 31"})
+    @DisplayName("should parse valid month-day dates")
     void shouldParseValidDates(String dateText) {
         LocalDate result = DateUtil.parseMonthDayWithYear(dateText, "MMMM d");
 
@@ -29,6 +31,7 @@ public class DateUtilTest {
 
     @ParameterizedTest
     @ValueSource(strings = {"Jan 1", "Feb 20", "Mar 07", "Apr 22", "May 1", "Jun 19", "Jul 10", "Aug 30", "Sep 17", "Oct 18", "Nov 4", "Dec 25"})
+    @DisplayName("should handle abbreviated month names")
     void shouldHandleAbbreviatedMonthNames(String dateText) {
         LocalDate result = DateUtil.parseMonthDayWithYear(dateText, "MMMM d");
 
