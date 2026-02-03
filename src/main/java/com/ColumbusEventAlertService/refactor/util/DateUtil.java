@@ -8,6 +8,13 @@ import java.time.format.DateTimeFormatter;
 public class DateUtil {
 
     public static LocalDate parseMonthDayWithYear(String dateText, String pattern) {
+        //Jan 20 becomes January 20
+        //Do not count the month of "May" as abbreviated
+        if(dateText.substring(3, 4).equals(" ") && !dateText.substring(0, 3).equalsIgnoreCase("may")) {
+          String fullMonthName = getFullMonthName(dateText.substring(0,3));
+          dateText = fullMonthName + dateText.substring(3);
+        }
+
         LocalDate date;
         try {
             dateText = monthNameStartsWithUpperCase(dateText);
@@ -27,6 +34,24 @@ public class DateUtil {
             );
         }
         return date;
+    }
+
+    private static String getFullMonthName(String monthName) {
+        return switch (monthName.toLowerCase()) {
+            case "jan" -> "January";
+            case "feb" -> "February";
+            case "mar" -> "March";
+            case "apr" -> "April";
+            case "jun" -> "June";
+            case "jul" -> "July";
+            case "aug" -> "August";
+            case "sep" -> "September";
+            case "oct" -> "October";
+            case "nov" -> "November";
+            case "dec" -> "December";
+            default -> throw new IllegalArgumentException("Invalid month name: " + monthName);
+        };
+
     }
 
     static String monthNameStartsWithUpperCase(String dateText) {

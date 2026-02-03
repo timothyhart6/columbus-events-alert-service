@@ -27,6 +27,14 @@ public class DateUtilTest {
         assertEquals(expected.getDayOfMonth(), result.getDayOfMonth());
     }
 
+    @ParameterizedTest
+    @ValueSource(strings = {"Jan 1", "Feb 20", "Mar 07", "Apr 22", "May 1", "Jun 19", "Jul 10", "Aug 30", "Sep 17", "Oct 18", "Nov 4", "Dec 25"})
+    void shouldHandleAbbreviatedMonthNames(String dateText) {
+        LocalDate result = DateUtil.parseMonthDayWithYear(dateText, "MMMM d");
+
+        assertNotNull(result);
+    }
+
     @Test
     void shouldParseUppercaseMonths() {
         String dateText = "MARCH 20";
@@ -78,7 +86,6 @@ public class DateUtilTest {
         assertEquals(expected.getMonth(), result.getMonth());
         assertEquals(expected.getDayOfMonth(), result.getDayOfMonth());
     }
-
 
     @Test
     void shouldUseCurrentYearForFutureDates() {
