@@ -66,6 +66,19 @@ public class DateUtilTest {
         assertEquals(expected.getDayOfMonth(), result.getDayOfMonth());
     }
 
+    @Test
+    void shouldParseSingleDigitDay() {
+        String dateText = "March 8";
+        LocalDate result = DateUtil.parseMonthDayWithYear(dateText, "MMMM d");
+
+        assertNotNull(result);
+
+        // Parse expected month and day
+        MonthDay expected = MonthDay.parse(DateUtil.monthNameStartsWithUpperCase(dateText), MONTH_DAY);
+        assertEquals(expected.getMonth(), result.getMonth());
+        assertEquals(expected.getDayOfMonth(), result.getDayOfMonth());
+    }
+
 
     @Test
     void shouldUseCurrentYearForFutureDates() {
