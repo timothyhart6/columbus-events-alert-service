@@ -178,4 +178,100 @@ public class KembaLiveStrategyTest {
         assertTrue(elements.isEmpty());
     }
 
+    @Test
+    void shouldParseCompleteHtmlPage() throws Exception {
+        String html = """
+                <html>
+                    <head><title>Kemba Live Events</title></head>
+                    <body>
+                        <div class="events-list">
+                            <div class="event-item">
+                                <div>
+                                    <h2>The Lumineers</h2>
+                                </div>
+                                <span class="doors-time">March 15</span>
+                                <span class="doors-time">7:30 PM</span>
+                            </div>
+                            <div class="event-item">
+                                <div>
+                                    <h2>Imagine Dragons</h2>
+                                </div>
+                                <span class="doors-time">March 20</span>
+                                <span class="doors-time">8:00 PM</span>
+                            </div>
+                            <div class="event-item">
+                                <div>
+                                    <h2>Twenty One Pilots</h2>
+                                </div>
+                                <span class="doors-time">April 5</span>
+                            </div>
+                        </div>
+                    </body>
+                </html>
+                """;
+
+        Document doc = Jsoup.parse(html);
+        Elements eventElements = strategy.findAllElements(doc);
+
+        assertEquals(3, eventElements.size());
+
+        // Parse first event (with time)
+        Event event1 = strategy.parseEvent(eventElements.get(0));
+        assertEquals("The Lumineers", event1.getName());
+        assertEquals("7:30 PM", event1.getTime());
+        assertEquals("Kemba Live!", event1.getLocationName());
+
+        // Parse second event (with time)
+        Event event2 = strategy.parseEvent(eventElements.get(1));
+        assertEquals("Imagine Dragons", event2.getName());
+        assertEquals("8:00 PM", event2.getTime());
+
+        // Parse third event (no time)
+        Event event3 = strategy.parseEvent(eventElements.get(2));
+        assertEquals("Twenty One Pilots", event3.getName());
+        assertNull(event3.getTime());
+    }
+    @Test
+    void shouldHandleMixedEvents() {
+        String html = """
+                <html>
+                    <body>
+                        <div class="events-list">
+                            <div class="event-item">
+                                <h2>Valid Event</h2>
+                                <span class="doors-time">March 15</span>
+                            </div>
+                            <div class="event-item">
+                                <!-- Invalid: missing h2 -->
+                                <span class="doors-time">March 20</span>
+                            </div>
+                            <div class="event-item">
+                                <h2>Another Valid Event</h2>
+                                <span class="doors-time">March 25</span>
+                            </div>
+                        </div>
+                    </body>
+                </html>
+                """;
+
+        Document doc = Jsoup.parse(html);
+        Elements eventElements = strategy.findAllElements(doc);
+
+        assertEquals(3, eventElements.size());
+
+        // First event should parse successfully
+        assertDoesNotThrow(() -> {
+            Event event1 = strategy.parseEvent(eventElements.get(0));
+            assertEquals("Valid Event", event1.getName());
+        });
+
+        // Second event should throw exception
+        assertThrows(Exception.class, () -> strategy.parseEvent(eventElements.get(1)));
+
+        // Third event should parse successfully
+        assertDoesNotThrow(() -> {
+            Event event3 = strategy.parseEvent(eventElements.get(2));
+            assertEquals("Another Valid Event", event3.getName());
+        });
+    }
 }
