@@ -1,6 +1,7 @@
 package com.ColumbusEventAlertService.refactor.services.strategy.scraper;
 
 import com.ColumbusEventAlertService.refactor.models.Event;
+import com.ColumbusEventAlertService.refactor.util.DateUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -8,9 +9,6 @@ import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Value;
 
 import java.time.LocalDate;
-import java.time.MonthDay;
-import java.time.Year;
-import java.time.format.DateTimeFormatter;
 
 @Slf4j
 public class KembaLiveStrategy extends AbstractWebScraperStrategy {
@@ -32,7 +30,14 @@ public class KembaLiveStrategy extends AbstractWebScraperStrategy {
         }
 
         String dateText = dateTimeElements.get(0).text().trim();
-        LocalDate eventDate = extractEventDate(dateText);
+        LocalDate eventDate;
+
+        try {
+            eventDate = DateUtil.parseMonthDayWithYear(dateText, "MMMM d");
+        } catch (Exception e) {
+            log.error("Error parsing date for {}", getLocationName());
+            throw new Exception();
+        }
 
         String eventTime = null;
         if (dateTimeElements.size() > 1) {
@@ -50,7 +55,13 @@ public class KembaLiveStrategy extends AbstractWebScraperStrategy {
     }
 
     protected Elements findAllElements(Document document) {
-        return document.select(".events-list").get(0).children();
+        Elements events = new Elements();
+        try {
+            events = document.select(".events-list").get(0).children();
+        } catch (IndexOutOfBoundsException e) {
+            log.error("No events found for {}", getLocationName());
+        }
+        return events;
     }
 
     protected String extractEventName(Element element) throws Exception {
@@ -64,18 +75,6 @@ public class KembaLiveStrategy extends AbstractWebScraperStrategy {
     }
 
 
-    protected LocalDate extractEventDate(String dateText) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMMM d");
-        MonthDay monthDay = MonthDay.parse(dateText, formatter);;
-        int year = Year.now().getValue();
-        LocalDate date = monthDay.atYear(year);
-
-        if(date.isBefore(LocalDate.now())) {
-           date = date.plusYears(1);
-        }
-
-        return date;
-    }
 
 
 }
