@@ -27,47 +27,53 @@ public abstract class AbstractWebScraperStrategy implements EventSourceStrategy 
         this.locationUrl = locationUrl;
     }
 
-    public List<Event> fetchTodaysEvents() throws Exception {
-        log.info("Fetching todays events for {}", getLocationName());
+    public List<Event> fetchCurrentDayEvents() throws Exception {
+        log.info("Fetching today's events for {}", getLocationName());
 
         try {
-            ArrayList<Event> todaysEvents = new ArrayList<>();
             Document document = fetchDocument();
             Elements eventElements = findAllElements(document);
 
             if (eventElements.isEmpty()) {
                 log.info("No events found for {}", getLocationName());
+
                 return Collections.emptyList();
             }
 
-            for (Element element : eventElements) {
-                Event event = parseEvent(element);
-                if (event != null && event.getDate().equals(LocalDate.now())) {
-                    todaysEvents.add(event);
-                }
-            }
-            log.info("Found {} events today for {}", todaysEvents.size(), getLocationName());
+           ArrayList<Event> currentDayEvents = addCurrentDayEvents(eventElements);
+            log.info("Found {} events today for {}", currentDayEvents.size(), getLocationName());
 
-            return todaysEvents;
+            return currentDayEvents;
 
-        } catch ( Exception e ) {
+            //TODO Add additional exceptions
+        } catch (IndexOutOfBoundsException e) {
             log.error("Error while fetching events for {}", getLocationName(), e);
-        }
 
-        return Collections.emptyList();
+            return Collections.emptyList();
+        }
+    }
+
+    private ArrayList<Event> addCurrentDayEvents(Elements eventElements) throws Exception {
+        ArrayList<Event> currentDayEvents = new ArrayList<>();
+        for (Element element : eventElements) {
+            Event event = parseEvent(element);
+            if (event != null && event.getDate().equals(LocalDate.now())) {
+                currentDayEvents.add(event);
+            }
+        }
+        return currentDayEvents;
     }
 
     private Document fetchDocument() throws IOException {
         return Jsoup.connect(locationUrl).get();
     }
 
-    protected String extractText(Element parent, String cssSelector) throws Exception {
+    protected String extractText(Element parent, String cssSelector) {
         Element element = parent.selectFirst(cssSelector);
         return element != null ? element.text().trim() : null;
     }
 
     abstract Elements findAllElements(Document document);
-
 
     abstract Event parseEvent(Element element) throws Exception;
 

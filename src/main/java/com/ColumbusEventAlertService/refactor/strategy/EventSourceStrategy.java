@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface EventSourceStrategy {
 
-    List<Event> fetchTodaysEvents() throws Exception;
+    List<Event> fetchCurrentDayEvents() throws Exception;
 
     String getLocationName();
 

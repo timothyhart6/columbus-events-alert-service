@@ -22,6 +22,6 @@ public class Application {
 			textMessageService.sendTodaysEvents();*/
 
 		KembaLiveStrategy kembaLiveStrategy = new KembaLiveStrategy("KembaLive", "https://promowestlive.com/columbus/kemba-live");
-		kembaLiveStrategy.fetchTodaysEvents();
+		kembaLiveStrategy.fetchCurrentDayEvents();
 	}
 }

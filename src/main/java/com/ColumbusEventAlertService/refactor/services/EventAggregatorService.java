@@ -12,19 +12,19 @@ import java.util.List;
 @Slf4j
 public class EventAggregatorService {
 
-    public List<Event> getTodaysEvents() {
+    public List<Event> getCurrentDayEvents() {
         log.info("Fetching Today's Events");
         //todo get all sources
         List<EventSourceStrategy> eventSources = new ArrayList<>();
-        List<Event> todaysEvents = new ArrayList<>();
+        List<Event> currentDayEvents = new ArrayList<>();
 
         for (EventSourceStrategy source : eventSources) {
             try {
-                List<Event> sourceEventsToday = source.fetchTodaysEvents();
+                List<Event> events = source.fetchCurrentDayEvents();
 
-                if (!sourceEventsToday.isEmpty()) {
-                    todaysEvents.addAll(sourceEventsToday);
-                    log.info("Added {} events for {}", todaysEvents.size(), source);
+                if (!events.isEmpty()) {
+                    currentDayEvents.addAll(events);
+                    log.info("Added {} events for {}", currentDayEvents.size(), source);
                 } else {
                     log.info("No events found for {}", source);
                 }
@@ -32,7 +32,7 @@ public class EventAggregatorService {
                 log.error("Failed to fetch Events from {}: {}", source.getLocationName(), e.getMessage(), e);
             }
         }
-        return todaysEvents;
+        return currentDayEvents;
     }
 
     private List<Event> removeDuplicates(List<Event> events) {
