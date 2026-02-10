@@ -27,7 +27,7 @@ public abstract class AbstractWebScraperStrategy implements EventSourceStrategy 
         this.locationUrl = locationUrl;
     }
 
-    public List<Event> fetchCurrentDayEvents() throws Exception {
+    public List<Event> fetchCurrentDayEvents()  {
         log.info("Fetching today's events for {}", getLocationName());
 
         try {
@@ -40,20 +40,20 @@ public abstract class AbstractWebScraperStrategy implements EventSourceStrategy 
                 return Collections.emptyList();
             }
 
-           ArrayList<Event> currentDayEvents = addCurrentDayEvents(eventElements);
+           ArrayList<Event> currentDayEvents = getCurrentDayEvents(eventElements);
             log.info("Found {} events today for {}", currentDayEvents.size(), getLocationName());
 
             return currentDayEvents;
 
             //TODO Add additional exceptions
-        } catch (IndexOutOfBoundsException e) {
+        } catch (Exception e) {
             log.error("Error while fetching events for {}", getLocationName(), e);
 
             return Collections.emptyList();
         }
     }
 
-    private ArrayList<Event> addCurrentDayEvents(Elements eventElements) throws Exception {
+     ArrayList<Event> getCurrentDayEvents(Elements eventElements) throws Exception {
         ArrayList<Event> currentDayEvents = new ArrayList<>();
         for (Element element : eventElements) {
             Event event = parseEvent(element);
@@ -64,7 +64,7 @@ public abstract class AbstractWebScraperStrategy implements EventSourceStrategy 
         return currentDayEvents;
     }
 
-    private Document fetchDocument() throws IOException {
+     Document fetchDocument() throws IOException {
         return Jsoup.connect(locationUrl).get();
     }
 
