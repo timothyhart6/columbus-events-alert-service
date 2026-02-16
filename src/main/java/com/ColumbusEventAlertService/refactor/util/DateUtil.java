@@ -8,24 +8,25 @@ import java.time.format.DateTimeFormatter;
 public class DateUtil {
 
     public static LocalDate parseMonthDayWithYear(String dateText, String pattern) throws IllegalArgumentException{
+
+        try {
+
         //Jan 20 becomes January 20
         //Do not count the month of "May" as abbreviated
         if(dateText.charAt(3) == ' ' && !dateText.substring(0, 3).equalsIgnoreCase("may")) {
-          String fullMonthName = getFullMonthName(dateText.substring(0,3));
-          dateText = fullMonthName + dateText.substring(3);
+            String fullMonthName = getFullMonthName(dateText.substring(0,3));
+            dateText = fullMonthName + dateText.substring(3);
         }
-
-        LocalDate date;
-        try {
             dateText = monthNameStartsWithUpperCase(dateText);
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern);
             MonthDay monthDay = MonthDay.parse(dateText, formatter);
             int currentYear = Year.now().getValue();
-            date = monthDay.atYear(currentYear);
+           LocalDate date = monthDay.atYear(currentYear);
 
             if (date.isBefore(LocalDate.now())) {
                 date = date.plusYears(1);
             }
+            return date;
         } catch (Exception e) {
             throw new IllegalArgumentException(
                     String.format("Failed to parse date '%s' with pattern '%s': %s",
@@ -33,7 +34,6 @@ public class DateUtil {
                     e
             );
         }
-        return date;
     }
 
     private static String getFullMonthName(String monthName) {

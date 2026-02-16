@@ -8,10 +8,12 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 
 @Slf4j
+@Component
 public class KembaLiveStrategy extends AbstractWebScraperStrategy {
 
     public KembaLiveStrategy(
@@ -25,7 +27,7 @@ public class KembaLiveStrategy extends AbstractWebScraperStrategy {
            String eventName = extractEventName(element.select("h2").get(0));
            Elements dateTimeElements = extractDateTimeElements(element);
            String dateText = dateTimeElements.get(0).text().trim();
-           LocalDate eventDate = DateUtil.parseMonthDayWithYear(dateText, "MMMM d");
+           LocalDate eventDate = extractEventDate(dateText);
 
            String eventTime = null;
            if (dateTimeElements.size() > 1) {
@@ -41,13 +43,6 @@ public class KembaLiveStrategy extends AbstractWebScraperStrategy {
                    .interesting(true)
                    .build();
 
-       }  catch (IllegalArgumentException e) {
-           throw new EventFetchException(
-                   getLocationName(),
-                   EventFetchException.ErrorType.PARSING_ERROR,
-                   "Failed to parse date",
-                   e
-           );
        } catch (Exception e) {
            throw new EventFetchException(
                    getLocationName(),
@@ -91,6 +86,24 @@ public class KembaLiveStrategy extends AbstractWebScraperStrategy {
         }
 
         return dateTimeElements;
+    }
+
+    private LocalDate extractEventDate(String dateText) throws EventFetchException {
+        if(dateText == null || dateText.isEmpty()) {
+            throw new EventFetchException(getLocationName(),
+                    EventFetchException.ErrorType.PARSING_ERROR,
+                    "No date text found");
+        }
+
+        try {
+            return DateUtil.parseMonthDayWithYear(dateText, "MMMM d");
+        } catch (IllegalArgumentException e) {
+            throw new EventFetchException(getLocationName(),
+                    EventFetchException.ErrorType.PARSING_ERROR,
+                    "Failed to parse date: " + dateText,
+                    e);
+        }
+
     }
 
 }

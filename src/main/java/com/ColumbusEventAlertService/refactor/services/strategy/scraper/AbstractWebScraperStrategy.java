@@ -44,7 +44,12 @@ public abstract class AbstractWebScraperStrategy implements EventSourceStrategy 
             log.info("Found {} events today for {}", currentDayEvents.size(), getLocationName());
 
             return currentDayEvents;
-        } catch (Exception e) {
+        } catch (IOException e) {
+            log.error("Error while fetching the html document for {}", getLocationName(), e);
+
+            return Collections.emptyList();
+        }
+        catch (Exception e) {
             log.error("Error while fetching events for {}", getLocationName(), e);
 
             return Collections.emptyList();
