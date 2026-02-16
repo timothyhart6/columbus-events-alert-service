@@ -1,5 +1,6 @@
 package com.ColumbusEventAlertService.refactor.services.strategy.scraper;
 
+import com.ColumbusEventAlertService.refactor.exception.EventFetchException;
 import com.ColumbusEventAlertService.refactor.models.Event;
 import com.ColumbusEventAlertService.refactor.strategy.EventSourceStrategy;
 import lombok.Getter;
@@ -39,13 +40,10 @@ public abstract class AbstractWebScraperStrategy implements EventSourceStrategy 
 
                 return Collections.emptyList();
             }
-
-           ArrayList<Event> currentDayEvents = getCurrentDayEvents(eventElements);
+            ArrayList<Event> currentDayEvents = getCurrentDayEvents(eventElements);
             log.info("Found {} events today for {}", currentDayEvents.size(), getLocationName());
 
             return currentDayEvents;
-
-            //TODO Add additional exceptions
         } catch (Exception e) {
             log.error("Error while fetching events for {}", getLocationName(), e);
 
@@ -53,13 +51,22 @@ public abstract class AbstractWebScraperStrategy implements EventSourceStrategy 
         }
     }
 
-     ArrayList<Event> getCurrentDayEvents(Elements eventElements) throws Exception {
+     ArrayList<Event> getCurrentDayEvents(Elements eventElements) {
         ArrayList<Event> currentDayEvents = new ArrayList<>();
-        for (Element element : eventElements) {
-            Event event = parseEvent(element);
-            if (event != null && event.getDate().equals(LocalDate.now())) {
-                currentDayEvents.add(event);
+        int elementCounter = 0;
+         LocalDate today = LocalDate.now();
+         for (Element element : eventElements) {
+
+            try {
+                Event event = parseEvent(element);
+                if (event != null && event.getDate().equals(today)) {
+                    currentDayEvents.add(event);
+                }
+            } catch (EventFetchException e) {
+                log.error("{} thrown while parsing event #{} for {}. Full exception message: {}", e.getErrorType(), elementCounter, e.getSourceName(), e.getMessage());
             }
+
+             elementCounter++;
         }
         return currentDayEvents;
     }
@@ -75,6 +82,6 @@ public abstract class AbstractWebScraperStrategy implements EventSourceStrategy 
 
     abstract Elements findAllElements(Document document);
 
-    abstract Event parseEvent(Element element) throws Exception;
+    abstract Event parseEvent(Element element) throws EventFetchException;
 
 }

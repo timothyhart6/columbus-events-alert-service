@@ -1,18 +1,8 @@
-package com.ColumbusEventAlertService.refactor.strategy;
+package com.ColumbusEventAlertService.refactor.exception;
 
-public class EventFetchException extends Exception {
+import lombok.Getter;
 
-public EventFetchException() {
-    super();
-
-}
-
-}
-
-
-/*
-
-
+@Getter
 public class EventFetchException extends Exception {
 
     private final String sourceName;
@@ -35,11 +25,4 @@ public class EventFetchException extends Exception {
         this(sourceName, errorType, message, null);
     }
 
-    public String getSourceName() {
-        return sourceName;
-    }
-
-    public ErrorType getErrorType() {
-        return errorType;
-    }
-}*/
+}

@@ -7,10 +7,10 @@ import java.time.format.DateTimeFormatter;
 
 public class DateUtil {
 
-    public static LocalDate parseMonthDayWithYear(String dateText, String pattern) {
+    public static LocalDate parseMonthDayWithYear(String dateText, String pattern) throws IllegalArgumentException{
         //Jan 20 becomes January 20
         //Do not count the month of "May" as abbreviated
-        if(dateText.substring(3, 4).equals(" ") && !dateText.substring(0, 3).equalsIgnoreCase("may")) {
+        if(dateText.charAt(3) == ' ' && !dateText.substring(0, 3).equalsIgnoreCase("may")) {
           String fullMonthName = getFullMonthName(dateText.substring(0,3));
           dateText = fullMonthName + dateText.substring(3);
         }
