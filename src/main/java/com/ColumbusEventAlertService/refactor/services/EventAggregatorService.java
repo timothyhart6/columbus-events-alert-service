@@ -11,11 +11,15 @@ import java.util.List;
 @Service
 @Slf4j
 public class EventAggregatorService {
+    List<EventSourceStrategy> eventSources;
+
+    public EventAggregatorService(List<EventSourceStrategy> eventSources) {
+        this.eventSources = eventSources;
+    }
 
     public List<Event> getCurrentDayEvents() {
         log.info("Fetching Today's Events");
-        //todo get all sources
-        List<EventSourceStrategy> eventSources = new ArrayList<>();
+
         List<Event> currentDayEvents = new ArrayList<>();
 
         for (EventSourceStrategy source : eventSources) {
