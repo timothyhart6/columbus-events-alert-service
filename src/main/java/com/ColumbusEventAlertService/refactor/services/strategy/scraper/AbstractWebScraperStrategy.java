@@ -16,6 +16,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import static com.ColumbusEventAlertService.refactor.exception.EventFetchException.ErrorType.PARSING_ERROR;
+
 @Slf4j
 public abstract class AbstractWebScraperStrategy implements EventSourceStrategy {
 
@@ -28,7 +30,7 @@ public abstract class AbstractWebScraperStrategy implements EventSourceStrategy 
         this.locationUrl = locationUrl;
     }
 
-    public List<Event> fetchCurrentDayEvents()  {
+    public List<Event> fetchCurrentDayEvents() throws EventFetchException {
         log.info("Fetching today's events for {}", getLocationName());
 
         try {
@@ -45,18 +47,23 @@ public abstract class AbstractWebScraperStrategy implements EventSourceStrategy 
 
             return currentDayEvents;
         } catch (IOException e) {
-            log.error("Error while fetching the html document for {}", getLocationName(), e);
-
-            return Collections.emptyList();
-        }
-        catch (Exception e) {
-            log.error("Error while fetching events for {}", getLocationName(), e);
-
-            return Collections.emptyList();
+            throw new EventFetchException(
+                    locationName,
+                    EventFetchException.ErrorType.NETWORK_ERROR,
+                    "Failed to connect to venue website: " + locationName,
+                    e
+            );
+        } catch (Exception e) {
+            throw new EventFetchException(
+                    locationName,
+                    EventFetchException.ErrorType.UNKNOWN_ERROR,
+                    "Unknown failure occurred when attempting to get events for: " + locationName,
+                    e
+            );
         }
     }
 
-     ArrayList<Event> getCurrentDayEvents(Elements eventElements) {
+     ArrayList<Event> getCurrentDayEvents(Elements eventElements) throws EventFetchException {
         ArrayList<Event> currentDayEvents = new ArrayList<>();
         int elementCounter = 0;
          LocalDate today = LocalDate.now();
@@ -68,8 +75,13 @@ public abstract class AbstractWebScraperStrategy implements EventSourceStrategy 
                     currentDayEvents.add(event);
                 }
             } catch (EventFetchException e) {
-                log.error("{} thrown while parsing event #{} for {}. Full exception message: {}", e.getErrorType(), elementCounter, e.getSourceName(), e.getMessage());
-            }
+               if (e.getErrorType().equals(PARSING_ERROR)) {
+                   //continue trying to parse other events
+                   log.error("{} thrown while parsing event #{} for {}. Full exception message: {}", e.getErrorType(), elementCounter, e.getSourceName(), e.getMessage());
+               } else {
+                   throw e;
+               }
+           }
 
              elementCounter++;
         }

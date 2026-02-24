@@ -1,5 +1,6 @@
 package com.ColumbusEventAlertService.refactor.services;
 
+import com.ColumbusEventAlertService.refactor.exception.EventFetchException;
 import com.ColumbusEventAlertService.refactor.models.Event;
 import com.ColumbusEventAlertService.refactor.strategy.EventSourceStrategy;
 import lombok.extern.slf4j.Slf4j;
@@ -32,8 +33,9 @@ public class EventAggregatorService {
                 } else {
                     log.info("No events found for {}", source);
                 }
-            } catch(Exception e) {
-                log.error("Failed to fetch Events from {}: {}", source.getLocationName(), e.getMessage(), e);
+            }  catch (EventFetchException e) {
+            log.error("Failed to fetch events from {}: {}",
+                    source.getLocationName(), e.getMessage(), e);
             }
         }
         return currentDayEvents;

@@ -11,7 +11,7 @@ public class EventFetchException extends Exception {
     public enum ErrorType {
         NETWORK_ERROR,
         PARSING_ERROR,
-        CONFIGURATION_ERROR,
+        UNKNOWN_ERROR,
         DATA_SOURCE_UNAVAILABLE
     }
 
