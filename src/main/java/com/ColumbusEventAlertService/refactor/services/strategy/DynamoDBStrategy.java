@@ -1,10 +1,14 @@
 package com.ColumbusEventAlertService.refactor.services.strategy;
 
+import com.ColumbusEventAlertService.refactor.exception.EventFetchException;
 import com.ColumbusEventAlertService.refactor.models.Event;
 import com.ColumbusEventAlertService.refactor.strategy.EventSourceStrategy;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
+import software.amazon.awssdk.services.dynamodb.model.DynamoDbException;
 import software.amazon.awssdk.services.dynamodb.model.ScanRequest;
 import software.amazon.awssdk.services.dynamodb.model.ScanResponse;
 
@@ -15,9 +19,12 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
+@Slf4j
+@Component
 public class DynamoDBStrategy implements EventSourceStrategy {
+
+    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ISO_LOCAL_DATE;
 
     private final DynamoDbClient dynamoDbClient;
     private final String tableName;
@@ -31,38 +38,79 @@ public class DynamoDBStrategy implements EventSourceStrategy {
     }
 
     @Override
-    public List<Event> fetchCurrentDayEvents() throws Exception {
+    public List<Event> fetchCurrentDayEvents() throws EventFetchException {
+        log.info("Checking DynamoDB for all events happening today");
         List<Event> events = new ArrayList<>();
 
-        // Skip DynamoDB calls when running locally
-        if (isRunningLocally()) {
-            return events;
-        }
+        try {
+            // Skip DynamoDB calls when running locally
+            if (isRunningLocally()) return events;
 
-        List<Map<String, AttributeValue>> items = scanDBForCurrentDayEvents();
+            List<Map<String, AttributeValue>> items = scanDBForCurrentDayEvents();
 
-        if (items.isEmpty()) {
-            return events;
-        } else {
+            if (items.isEmpty()) return events;
+
             for (Map<String, AttributeValue> item : items) {
                 try {
-                    Event event = Event.builder()
-                            //do I really need all these null checks? Should I just catch exceptions instead?
-                            .locationName(String.valueOf(Optional.ofNullable(item.get("locationName"))))
-                            .name(nullCheckString(item.get("eventName")))
-                            .date(LocalDate.parse(nullCheckString(item.get("date"))))
-                            .time(nullCheckString(item.get("time")))
-                            //change table column names
-                            .causesTraffic(nullCheckBool(AttributeValue.fromBool(item.get("isBadTraffic").bool())))
-                            .interesting(nullCheckBool(AttributeValue.fromBool(item.get("isDesiredEvent").bool())))
-                            .build();
+                    Event event = mapEvent(item);
                     events.add(event);
-                } catch (NullPointerException e) {
-
+                } catch (EventFetchException e) {
+                    log.error("Failed to parse event from DynamoDB: {}", e.getMessage());
                 }
             }
+            return events;
+
+        } catch (DynamoDbException e) {
+            throw new EventFetchException(
+                    "DynamoDB",
+                    EventFetchException.ErrorType.DATA_SOURCE_UNAVAILABLE,
+                    "Failed to query DynamoDB: " + e.getMessage(),
+                    e
+            );
+        } catch (Exception e) {
+            throw new EventFetchException(
+                    "DynamoDB",
+                    EventFetchException.ErrorType.PARSING_ERROR,
+                    "Failed to parse DynamoDB items",
+                    e
+            );
         }
-        return events;
+
+    }
+
+    private Event mapEvent(Map<String, AttributeValue> item) throws EventFetchException {
+        String locationName =  getRequiredString(item,"locationName");
+        String eventName = getRequiredString(item,"eventName");
+        String dateString = getRequiredString(item,"date");
+        String eventTime = nullCheckString(item.get("time"));
+        //TODO change column names in dynamoDB table
+        boolean causesTraffic = nullCheckBool(item.get("isBadTraffic"));
+        boolean interesting = nullCheckBool(item.get("isDesiredEvent"));
+
+        LocalDate eventDate = parseDate(dateString);
+
+        return  Event.builder()
+                .locationName(locationName)
+                .name(eventName)
+                .date(eventDate)
+                .time(eventTime)
+                .causesTraffic(causesTraffic)
+                .interesting(interesting)
+                .build();
+    }
+
+    private static LocalDate parseDate(String dateString) throws EventFetchException {
+
+        try {
+            return LocalDate.parse(dateString, DATE_FORMATTER);
+        } catch (Exception e) {
+            throw new EventFetchException(
+                    "DynamoDB",
+                    EventFetchException.ErrorType.PARSING_ERROR,
+                    "Invalid date format in DynamoDB: " + dateString,
+                    e
+            );
+        }
     }
 
     @Override
@@ -103,6 +151,18 @@ public class DynamoDBStrategy implements EventSourceStrategy {
     }
 
     static boolean nullCheckBool(AttributeValue attribute) {
-        return attribute != null && attribute.bool() != null ? attribute.bool() : true;
+        return attribute == null || attribute.bool();
+    }
+
+    private String getRequiredString(Map<String, AttributeValue> item, String key) throws EventFetchException {
+        AttributeValue value = item.get(key);
+        if (value == null || value.s() == null || value.s().isEmpty()) {
+            throw new EventFetchException(
+                    "DynamoDB",
+                    EventFetchException.ErrorType.PARSING_ERROR,
+                    "Required field '" + key + "' is missing or empty"
+            );
+        }
+        return value.s();
     }
 }
