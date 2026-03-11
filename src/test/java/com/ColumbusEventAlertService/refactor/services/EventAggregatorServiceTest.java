@@ -24,6 +24,6 @@ class EventAggregatorServiceTest {
     @Test
     void shouldLoadAllEventSources() {
         // Verify Spring found all your strategies
-        assertEquals(1, eventSources.size());
+        assertEquals(2, eventSources.size());
     }
 }
