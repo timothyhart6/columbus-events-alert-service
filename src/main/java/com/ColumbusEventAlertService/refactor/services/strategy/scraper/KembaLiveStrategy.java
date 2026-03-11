@@ -39,7 +39,7 @@ public class KembaLiveStrategy extends AbstractWebScraperStrategy {
                    .name(eventName)
                    .date(eventDate)
                    .time(eventTime)
-                   .causesTraffic(false)
+                   .trafficCausing(false)
                    .interesting(true)
                    .build();
 

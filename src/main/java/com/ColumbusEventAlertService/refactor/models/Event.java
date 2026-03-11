@@ -4,6 +4,7 @@ import lombok.Getter;
 
 import java.time.LocalDate;
 import java.util.Objects;
+import java.util.Optional;
 
 @Getter
 public class Event {
@@ -11,16 +12,16 @@ public class Event {
     private final String locationName;
     private final String name;
     private final LocalDate date;
-    private final String time;
-    private final boolean causesTraffic;
+    private final Optional<String> time;
+    private final boolean trafficCausing;
     private final boolean interesting;
 
     private Event(Builder builder) {
         this.locationName = Objects.requireNonNull(builder.locationName);
         this.name = Objects.requireNonNull(builder.name);
         this.date = Objects.requireNonNull(builder.date);
-        this.time = builder.time;
-        this.causesTraffic = builder.causesTraffic;
+        this.time = Optional.ofNullable(builder.time);
+        this.trafficCausing = builder.trafficCausing;
         this.interesting = builder.interesting;
     }
 
@@ -34,7 +35,7 @@ public class Event {
         private String name;
         private LocalDate date;
         private String time;
-        private boolean causesTraffic;
+        private boolean trafficCausing;
         private boolean interesting;
 
         public Builder locationName(String locationName) {
@@ -57,8 +58,8 @@ public class Event {
             return this;
         }
 
-        public Builder causesTraffic(boolean causesTraffic) {
-            this.causesTraffic = causesTraffic;
+        public Builder trafficCausing(boolean trafficCausing) {
+            this.trafficCausing = trafficCausing;
             return this;
         }
 

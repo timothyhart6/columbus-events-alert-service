@@ -19,6 +19,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Slf4j
 @Component
@@ -78,13 +79,16 @@ public class DynamoDBStrategy implements EventSourceStrategy {
 
     }
 
-    private Event mapEvent(Map<String, AttributeValue> item) throws EventFetchException {
+    Event mapEvent(Map<String, AttributeValue> item) throws EventFetchException {
         String locationName =  getRequiredString(item,"locationName");
         String eventName = getRequiredString(item,"eventName");
         String dateString = getRequiredString(item,"date");
-        String eventTime = nullCheckString(item.get("time"));
+        String eventTime = Optional.ofNullable(item.get("time"))
+                .map(AttributeValue::s)
+                .filter(s -> !s.isEmpty())
+                .orElse(null);
         //TODO change column names in dynamoDB table
-        boolean causesTraffic = nullCheckBool(item.get("isBadTraffic"));
+        boolean trafficCausing = nullCheckBool(item.get("isBadTraffic"));
         boolean interesting = nullCheckBool(item.get("isDesiredEvent"));
 
         LocalDate eventDate = parseDate(dateString);
@@ -94,12 +98,12 @@ public class DynamoDBStrategy implements EventSourceStrategy {
                 .name(eventName)
                 .date(eventDate)
                 .time(eventTime)
-                .causesTraffic(causesTraffic)
+                .trafficCausing(trafficCausing)
                 .interesting(interesting)
                 .build();
     }
 
-    private static LocalDate parseDate(String dateString) throws EventFetchException {
+    static LocalDate parseDate(String dateString) throws EventFetchException {
 
         try {
             return LocalDate.parse(dateString, DATE_FORMATTER);
@@ -115,7 +119,7 @@ public class DynamoDBStrategy implements EventSourceStrategy {
 
     @Override
     public String getLocationName() {
-        return "";
+        return "ColumbusEvents - DynamoDB table";
     }
 
     public List<Map<String, AttributeValue>> scanDBForCurrentDayEvents() {
@@ -142,12 +146,8 @@ public class DynamoDBStrategy implements EventSourceStrategy {
         return items;
     }
 
-    static boolean isRunningLocally() {
+    boolean isRunningLocally() {
         return System.getenv("AWS_EXECUTION_ENV") == null;
-    }
-
-    static String nullCheckString(AttributeValue attribute) {
-        return (attribute != null && attribute.s() != null) ? attribute.s() : "";
     }
 
     static boolean nullCheckBool(AttributeValue attribute) {

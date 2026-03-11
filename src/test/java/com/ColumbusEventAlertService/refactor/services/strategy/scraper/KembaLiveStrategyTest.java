@@ -43,9 +43,9 @@ public class KembaLiveStrategyTest {
         assertThat(event.getDate().getYear(), anyOf(is(thisYear), is(thisYear + 1)));
         assertEquals(3, event.getDate().getMonth().getValue() );
         assertEquals(15, event.getDate().getDayOfMonth());
-        assertEquals("8:00 PM", event.getTime());
+        assertEquals("8:00 PM", event.getTime().orElse(null));
         assertTrue(event.isInteresting());
-        assertFalse(event.isCausesTraffic());
+        assertFalse(event.isTrafficCausing());
 
     }
 
@@ -66,7 +66,7 @@ public class KembaLiveStrategyTest {
         assertEquals("Kemba Live!", event.getLocationName());
         assertEquals(4, event.getDate().getMonth().getValue() );
         assertEquals(20, event.getDate().getDayOfMonth());
-        assertNull(event.getTime(), "Time should be null when not provided");
+        assertNull(event.getTime().orElse(null), "Time should be null when not provided");
     }
 
     @Test
@@ -85,7 +85,7 @@ public class KembaLiveStrategyTest {
         assertEquals("The Lumineers", event.getName());
         assertEquals(5, event.getDate().getMonth().getValue() );
         assertEquals(10, event.getDate().getDayOfMonth());
-        assertEquals("7:30 PM", event.getTime());
+        assertEquals("7:30 PM", event.getTime().orElse(null));
     }
 
     @Test
@@ -218,18 +218,18 @@ public class KembaLiveStrategyTest {
         // Parse first event (with time)
         Event event1 = strategy.parseEvent(eventElements.get(0));
         assertEquals("The Lumineers", event1.getName());
-        assertEquals("7:30 PM", event1.getTime());
+        assertEquals("7:30 PM", event1.getTime().orElse(null));
         assertEquals("Kemba Live!", event1.getLocationName());
 
         // Parse second event (with time)
         Event event2 = strategy.parseEvent(eventElements.get(1));
         assertEquals("Imagine Dragons", event2.getName());
-        assertEquals("8:00 PM", event2.getTime());
+        assertEquals("8:00 PM", event2.getTime().orElse(null));
 
         // Parse third event (no time)
         Event event3 = strategy.parseEvent(eventElements.get(2));
         assertEquals("Twenty One Pilots", event3.getName());
-        assertNull(event3.getTime());
+        assertNull(event3.getTime().orElse(null));
     }
     @Test
     void shouldHandleMixedEvents() {
