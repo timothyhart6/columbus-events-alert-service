@@ -17,9 +17,9 @@ import java.time.LocalDate;
 public class KembaLiveStrategy extends AbstractWebScraperStrategy {
 
     public KembaLiveStrategy(
-            @Value("${venue-name.kemba}") String locationName,
+            @Value("${venue-name.kemba}") String sourceName,
             @Value("${url.kemba}") String locationUrl) {
-        super(locationName, locationUrl);
+        super(sourceName, locationUrl);
     }
 
     protected Event parseEvent(Element element) throws EventFetchException {
@@ -35,7 +35,7 @@ public class KembaLiveStrategy extends AbstractWebScraperStrategy {
            }
 
            return Event.builder()
-                   .locationName(getLocationName())
+                   .locationName(getSourceName())
                    .name(eventName)
                    .date(eventDate)
                    .time(eventTime)
@@ -45,7 +45,7 @@ public class KembaLiveStrategy extends AbstractWebScraperStrategy {
 
        } catch (Exception e) {
            throw new EventFetchException(
-                   getLocationName(),
+                   getSourceName(),
                    EventFetchException.ErrorType.PARSING_ERROR,
                    "Unexpected error during parsing",
                    e
@@ -58,7 +58,7 @@ public class KembaLiveStrategy extends AbstractWebScraperStrategy {
         try {
             events = document.select(".events-list").get(0).children();
         } catch (IndexOutOfBoundsException e) {
-            log.error("No events found for {}", getLocationName());
+            log.error("No events found for {}", getSourceName());
         }
         return events;
     }
@@ -66,9 +66,9 @@ public class KembaLiveStrategy extends AbstractWebScraperStrategy {
     protected String extractEventName(Element element) throws EventFetchException {
         String eventName = extractText(element, "h2");
         if(eventName == null || eventName.isEmpty()) {
-            log.error("No event name found for {}", getLocationName());
+            log.error("No event name found for {}", getSourceName());
             throw new EventFetchException(
-                    getLocationName(),
+                    getSourceName(),
                     EventFetchException.ErrorType.PARSING_ERROR,
                     "No event name found");
         }
@@ -80,7 +80,7 @@ public class KembaLiveStrategy extends AbstractWebScraperStrategy {
 
         if(dateTimeElements.isEmpty()) {
             throw new EventFetchException(
-                    getLocationName(),
+                    getSourceName(),
                     EventFetchException.ErrorType.PARSING_ERROR,
                     "No date/time element found");
         }
@@ -90,7 +90,7 @@ public class KembaLiveStrategy extends AbstractWebScraperStrategy {
 
     private LocalDate extractEventDate(String dateText) throws EventFetchException {
         if(dateText == null || dateText.isEmpty()) {
-            throw new EventFetchException(getLocationName(),
+            throw new EventFetchException(getSourceName(),
                     EventFetchException.ErrorType.PARSING_ERROR,
                     "No date text found");
         }
@@ -98,7 +98,7 @@ public class KembaLiveStrategy extends AbstractWebScraperStrategy {
         try {
             return DateUtil.parseMonthDayWithYear(dateText, "MMMM d");
         } catch (IllegalArgumentException e) {
-            throw new EventFetchException(getLocationName(),
+            throw new EventFetchException(getSourceName(),
                     EventFetchException.ErrorType.PARSING_ERROR,
                     "Failed to parse date: " + dateText,
                     e);

@@ -35,7 +35,7 @@ public class EventAggregatorService {
                 }
             }  catch (EventFetchException e) {
             log.error("Failed to fetch events from {}: {}",
-                    source.getLocationName(), e.getMessage(), e);
+                    source.getSourceName(), e.getMessage(), e);
             }
         }
         return currentDayEvents;
@@ -49,11 +49,3 @@ public class EventAggregatorService {
 
 }
 
-/*
-* TODO
-*  1. Create EventSourceStrategy
-*  2. implement EventSourceStrategy for the Event class
-*  3.Create method to get all events
-*  4. Override the equals() and hashCode() methods in Events
-*  5. put it all together
-* */

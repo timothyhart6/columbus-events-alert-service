@@ -9,6 +9,6 @@ public interface EventSourceStrategy {
 
     List<Event> fetchCurrentDayEvents() throws EventFetchException;
 
-    String getLocationName();
+    String getSourceName();
 
 }

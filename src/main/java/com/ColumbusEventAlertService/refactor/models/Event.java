@@ -29,7 +29,7 @@ public class Event {
         return new Builder();
     }
 
-    //Could switch to Lombok builder. Creating manually first to understand how it works under the hood).
+    //Could switch to Lombok builder. Creating manually first to understand how it works under the hood.
     public static class Builder {
         private String locationName;
         private String name;

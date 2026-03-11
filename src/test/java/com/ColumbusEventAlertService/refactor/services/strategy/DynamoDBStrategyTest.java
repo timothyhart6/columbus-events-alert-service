@@ -183,8 +183,8 @@ public class DynamoDBStrategyTest {
     }
 
     @Test
-    void getLocationName_returnsExpectedString() {
-        assertEquals("ColumbusEvents - DynamoDB table", strategy.getLocationName());
+    void getSourceName_returnsExpectedString() {
+        assertEquals("ColumbusEvents - DynamoDB table", strategy.getSourceName());
     }
 
     private Map<String, AttributeValue> buildItem(

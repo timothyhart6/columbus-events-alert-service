@@ -118,7 +118,7 @@ public class DynamoDBStrategy implements EventSourceStrategy {
     }
 
     @Override
-    public String getLocationName() {
+    public String getSourceName() {
         return "ColumbusEvents - DynamoDB table";
     }
 

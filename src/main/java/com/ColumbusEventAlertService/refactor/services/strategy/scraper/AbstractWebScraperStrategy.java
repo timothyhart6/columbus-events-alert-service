@@ -22,42 +22,42 @@ import static com.ColumbusEventAlertService.refactor.exception.EventFetchExcepti
 public abstract class AbstractWebScraperStrategy implements EventSourceStrategy {
 
     @Getter
-    String locationName;
+    String sourceName;
     String locationUrl;
 
-    public AbstractWebScraperStrategy(String locationName, String locationUrl) {
-        this.locationName = locationName;
+    public AbstractWebScraperStrategy(String sourceName, String locationUrl) {
+        this.sourceName = sourceName;
         this.locationUrl = locationUrl;
     }
 
     public List<Event> fetchCurrentDayEvents() throws EventFetchException {
-        log.info("Fetching today's events for {}", getLocationName());
+        log.info("Fetching today's events for {}", getSourceName());
 
         try {
             Document document = fetchDocument();
             Elements eventElements = findAllElements(document);
 
             if (eventElements.isEmpty()) {
-                log.info("No events found for {}", getLocationName());
+                log.info("No events found for {}", getSourceName());
 
                 return Collections.emptyList();
             }
             ArrayList<Event> currentDayEvents = getCurrentDayEvents(eventElements);
-            log.info("Found {} events today for {}", currentDayEvents.size(), getLocationName());
+            log.info("Found {} events today for {}", currentDayEvents.size(), getSourceName());
 
             return currentDayEvents;
         } catch (IOException e) {
             throw new EventFetchException(
-                    locationName,
+                    sourceName,
                     EventFetchException.ErrorType.NETWORK_ERROR,
-                    "Failed to connect to venue website: " + locationName,
+                    "Failed to connect to venue website: " + sourceName,
                     e
             );
         } catch (Exception e) {
             throw new EventFetchException(
-                    locationName,
+                    sourceName,
                     EventFetchException.ErrorType.UNKNOWN_ERROR,
-                    "Unknown failure occurred when attempting to get events for: " + locationName,
+                    "Unknown failure occurred when attempting to get events for: " + sourceName,
                     e
             );
         }
