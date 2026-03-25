@@ -6,8 +6,10 @@ import com.ColumbusEventAlertService.refactor.strategy.EventSourceStrategy;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -29,6 +31,7 @@ public class EventAggregatorService {
 
                 if (!events.isEmpty()) {
                     currentDayEvents.addAll(events);
+                    currentDayEvents = removeDuplicates(currentDayEvents);
                     log.info("Added {} events for {}", currentDayEvents.size(), source);
                 } else {
                     log.info("No events found for {}", source);
@@ -41,10 +44,19 @@ public class EventAggregatorService {
         return currentDayEvents;
     }
 
-    private List<Event> removeDuplicates(List<Event> events) {
-        //todo determine which logic to use
-        //ArrayList<> distinctEvents = new LinkedHashSet<>(allEvents);
-        return new ArrayList<>(events);
+    List<Event> removeDuplicates(List<Event> events) {
+        record EventKey(String locationName, String name, LocalDate date) {}
+
+        /* Creates a key based on the event location, name, and date.
+        * assigns the Event as the value to that key.
+        * If there's already an Event for that key, it prioritizes the Event with a time (if any) */
+        return new ArrayList<>(events.stream()
+                .collect(Collectors.toMap(
+                        e -> new EventKey(e.getLocationName(), e.getName(), e.getDate()),
+                        e -> e,
+                        (existing, replacement) -> existing.getTime() != null && !existing.getTime().isBlank() ? existing : replacement
+                ))
+                .values());
     }
 
 }
