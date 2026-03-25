@@ -48,7 +48,7 @@ public class DynamoDBStrategyTest {
         assertEquals("Nationwide Arena", event.getLocationName());
         assertEquals("Hockey Game", event.getName());
         assertEquals(LocalDate.of(2025, 6, 15), event.getDate());
-        assertEquals("19:00", event.getTime().orElse(null));
+        assertEquals("19:00", event.getTime());
         assertTrue(event.isTrafficCausing());
         assertFalse(event.isInteresting());
     }

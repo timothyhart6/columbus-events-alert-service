@@ -4,7 +4,6 @@ import lombok.Getter;
 
 import java.time.LocalDate;
 import java.util.Objects;
-import java.util.Optional;
 
 @Getter
 public class Event {
@@ -12,7 +11,7 @@ public class Event {
     private final String locationName;
     private final String name;
     private final LocalDate date;
-    private final Optional<String> time;
+    private final String time;
     private final boolean trafficCausing;
     private final boolean interesting;
 
@@ -20,7 +19,7 @@ public class Event {
         this.locationName = Objects.requireNonNull(builder.locationName);
         this.name = Objects.requireNonNull(builder.name);
         this.date = Objects.requireNonNull(builder.date);
-        this.time = Optional.ofNullable(builder.time);
+        this.time = builder.time;
         this.trafficCausing = builder.trafficCausing;
         this.interesting = builder.interesting;
     }
