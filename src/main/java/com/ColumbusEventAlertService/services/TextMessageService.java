@@ -1,13 +1,14 @@
 package com.ColumbusEventAlertService.services;
 
-import com.ColumbusEventAlertService.EventCollector;
-import com.ColumbusEventAlertService.models.Event;
+import com.ColumbusEventAlertService.refactor.models.Event;
+import com.ColumbusEventAlertService.refactor.services.EventAggregatorService;
 import com.ColumbusEventAlertService.services.smsProviders.TwilioService;
-import com.ColumbusEventAlertService.utils.DynamoDBReader;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -16,23 +17,23 @@ public class TextMessageService {
     @Autowired
     private TwilioService twilioService;
     @Autowired
-    private EventCollector eventCollector;
+    private EventAggregatorService eventAggregatorService;
 
     //Method that sends the Text Message
     public void sendTodaysEvents() {
         log.info("Text Message is sending...");
-        ArrayList<Event> events = eventCollector.getTodaysEvents(new DynamoDBReader());
+        List<com.ColumbusEventAlertService.refactor.models.Event> events = eventAggregatorService.getCurrentDayEvents();
         String textMessage = events.isEmpty() ? "No Events today!" : formatTodaysTextMessage(events);
-        twilioService.sendTextMessage(textMessage);
+//        twilioService.sendTextMessage(textMessage);
     }
 
-    private String formatTodaysTextMessage(ArrayList<Event> events) {
-        ArrayList<Event> badTrafficEvents = new ArrayList<>();
-        ArrayList<Event> desiredEvents = new ArrayList<>();
+    private String formatTodaysTextMessage(List<com.ColumbusEventAlertService.refactor.models.Event> events) {
+        ArrayList<com.ColumbusEventAlertService.refactor.models.Event> badTrafficEvents = new ArrayList<>();
+        ArrayList<com.ColumbusEventAlertService.refactor.models.Event> desiredEvents = new ArrayList<>();
 
-        for (Event event : events) {
-            if (event.isBadTraffic()) badTrafficEvents.add(event);
-            if (event.isDesiredEvent()) desiredEvents.add(event);
+        for (com.ColumbusEventAlertService.refactor.models.Event event : events) {
+            if (event.isTrafficCausing()) badTrafficEvents.add(event);
+            if (event.isInteresting()) desiredEvents.add(event);
         }
 
         // Adjusted format string for bad traffic message to match two arguments.
@@ -51,7 +52,7 @@ public class TextMessageService {
         return completeMessage;
     }
 
-    private static String getBadTrafficMessage(ArrayList<Event> badTrafficEvents, String format) {
+    private static String getBadTrafficMessage(ArrayList<com.ColumbusEventAlertService.refactor.models.Event> badTrafficEvents, String format) {
         if (badTrafficEvents.isEmpty()) {
             return "Smooth sailing today! No events causing major traffic concerns.";
         }
@@ -59,7 +60,7 @@ public class TextMessageService {
         String titleText = "AHHH TRAFFIC ALERT!!\n";
         String badTrafficMessage = badTrafficEvents.stream()
                 .map(event -> String.format(format,
-                        event.getLocationName(), event.getEventName(), event.getTime()))
+                        event.getLocationName(), event.getName(), event.getTime()))
                 .collect(Collectors.joining("\n\n")); // Adds an extra newline between each event
         return titleText + badTrafficMessage;
     }
@@ -71,7 +72,7 @@ public class TextMessageService {
         String titleText = "THESE SHOWS MIGHT BE FUN!\n";
         String funEventsMessage = desiredEvents.stream()
                 .map(event -> String.format(format,
-                        event.getEventName(), event.getLocationName(), event.getTime()))
+                        event.getName(), event.getLocationName(), event.getTime()))
                 .collect(Collectors.joining("\n\n"));
         return titleText + funEventsMessage;
     }
