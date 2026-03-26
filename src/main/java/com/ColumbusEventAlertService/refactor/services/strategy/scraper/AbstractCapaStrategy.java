@@ -33,8 +33,7 @@ public abstract class AbstractCapaStrategy extends AbstractWebScraperStrategy {
     protected Elements findAllElements(Document document) {
         Elements events = new Elements();
         try {
-            // TODO: verify this container selector against CAPA's actual HTML
-            events = document.select("article");
+            events = document.select(".production-container");
             if (events.isEmpty()) {
                 log.info("No events found for {}", getSourceName());
             }
@@ -47,8 +46,7 @@ public abstract class AbstractCapaStrategy extends AbstractWebScraperStrategy {
     @Override
     protected Event parseEvent(Element element) throws EventFetchException {
         try {
-            // TODO: verify this selector against CAPA's actual HTML
-            String eventName = extractText(element, ".text-xl.font-bold.mt-0.mb-0");
+            String eventName = extractText(element, "h2");
             if (eventName == null || eventName.isEmpty()) {
                 throw new EventFetchException(
                         getSourceName(),
