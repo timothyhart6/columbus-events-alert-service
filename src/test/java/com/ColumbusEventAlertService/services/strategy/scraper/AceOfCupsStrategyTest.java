@@ -1,7 +1,6 @@
-package com.ColumbusEventAlertService.refactor.services.strategy.scraper;
+package com.ColumbusEventAlertService.services.strategy.scraper;
 
 import com.ColumbusEventAlertService.models.Event;
-import com.ColumbusEventAlertService.services.strategy.scraper.AceOfCupsStrategy;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;

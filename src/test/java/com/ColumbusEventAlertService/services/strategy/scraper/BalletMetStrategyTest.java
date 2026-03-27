@@ -1,7 +1,6 @@
-package com.ColumbusEventAlertService.refactor.services.strategy.scraper;
+package com.ColumbusEventAlertService.services.strategy.scraper;
 
 import com.ColumbusEventAlertService.models.Event;
-import com.ColumbusEventAlertService.services.strategy.scraper.ShortNorthStageStrategy;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
@@ -12,20 +11,20 @@ import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class ShortNorthStageStrategyTest {
+public class BalletMetStrategyTest {
 
-    private ShortNorthStageStrategy strategy;
+    private BalletMetStrategy strategy;
 
     @BeforeEach
     void setUp() {
-        strategy = new ShortNorthStageStrategy("Short North Stage", "https://test.com?start={start-date}&end={end-date}");
+        strategy = new BalletMetStrategy("Ballet MET", "https://test.com?start={start-date}&end={end-date}");
     }
 
     @Test
     void shouldParseEvent() throws Exception {
         String html = """
                 <div class="production-container">
-                    <h2>The Fantasticks</h2>
+                    <h2>Swan Lake</h2>
                 </div>
                 """;
 
@@ -33,12 +32,12 @@ public class ShortNorthStageStrategyTest {
         Event event = strategy.parseEvent(doc.selectFirst(".production-container"));
 
         assertNotNull(event);
-        assertEquals("The Fantasticks", event.getName());
-        assertEquals("Short North Stage", event.getLocationName());
+        assertEquals("Swan Lake", event.getName());
+        assertEquals("Ballet MET", event.getLocationName());
         assertEquals(LocalDate.now(), event.getDate());
         assertNull(event.getTime());
-        assertTrue(event.isTrafficCausing());
-        assertFalse(event.isInteresting());
+        assertFalse(event.isTrafficCausing());
+        assertTrue(event.isInteresting());
     }
 
     @Test
@@ -46,8 +45,8 @@ public class ShortNorthStageStrategyTest {
         String html = """
                 <html>
                     <body>
-                        <div class="production-container"><h2>Show A</h2></div>
-                        <div class="production-container"><h2>Show B</h2></div>
+                        <div class="production-container"><h2>Swan Lake</h2></div>
+                        <div class="production-container"><h2>The Nutcracker</h2></div>
                     </body>
                 </html>
                 """;
