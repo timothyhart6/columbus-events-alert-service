@@ -1,4 +1,4 @@
-package com.ColumbusEventAlertService.truncated.services.smsProviders;
+package com.ColumbusEventAlertService.services.smsProviders;
 
 import com.twilio.Twilio;
 import com.twilio.rest.api.v2010.account.Message;

@@ -1,7 +1,7 @@
 package com.ColumbusEventAlertService.services;
 
 import com.ColumbusEventAlertService.models.Event;
-import com.ColumbusEventAlertService.truncated.services.smsProviders.TwilioService;
+import com.ColumbusEventAlertService.services.smsProviders.TwilioService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
