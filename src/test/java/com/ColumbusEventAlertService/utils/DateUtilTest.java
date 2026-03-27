@@ -1,5 +1,6 @@
 package com.ColumbusEventAlertService.utils;
 
+import com.ColumbusEventAlertService.truncated.utils.DateUtil;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;

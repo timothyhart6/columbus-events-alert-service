@@ -1,8 +1,9 @@
 package com.ColumbusEventAlertService.refactor.services;
 
-import com.ColumbusEventAlertService.refactor.exception.EventFetchException;
-import com.ColumbusEventAlertService.refactor.models.Event;
-import com.ColumbusEventAlertService.refactor.strategy.EventSourceStrategy;
+import com.ColumbusEventAlertService.exception.EventFetchException;
+import com.ColumbusEventAlertService.models.Event;
+import com.ColumbusEventAlertService.services.EventAggregatorService;
+import com.ColumbusEventAlertService.strategy.EventSourceStrategy;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 

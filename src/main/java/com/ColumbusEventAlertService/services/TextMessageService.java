@@ -1,8 +1,7 @@
 package com.ColumbusEventAlertService.services;
 
-import com.ColumbusEventAlertService.refactor.models.Event;
-import com.ColumbusEventAlertService.refactor.services.EventAggregatorService;
-import com.ColumbusEventAlertService.services.smsProviders.TwilioService;
+import com.ColumbusEventAlertService.models.Event;
+import com.ColumbusEventAlertService.truncated.services.smsProviders.TwilioService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,21 +21,21 @@ public class TextMessageService {
     //Method that sends the Text Message
     public void sendTodaysEvents() {
         log.info("Text Message is sending...");
-        List<com.ColumbusEventAlertService.refactor.models.Event> events = eventAggregatorService.getCurrentDayEvents();
+        List<Event> events = eventAggregatorService.getCurrentDayEvents();
         String textMessage = formatTodaysTextMessage(events);
         twilioService.sendTextMessage(textMessage);
     }
 
-    private String formatTodaysTextMessage(List<com.ColumbusEventAlertService.refactor.models.Event> events) {
+    private String formatTodaysTextMessage(List<Event> events) {
         if (events.isEmpty()) {
             log.info("No events to send");
             return "No Events today!";
         }
 
-        ArrayList<com.ColumbusEventAlertService.refactor.models.Event> trafficCausingEvents = new ArrayList<>();
-        ArrayList<com.ColumbusEventAlertService.refactor.models.Event> interestingEvents = new ArrayList<>();
+        ArrayList<Event> trafficCausingEvents = new ArrayList<>();
+        ArrayList<Event> interestingEvents = new ArrayList<>();
 
-        for (com.ColumbusEventAlertService.refactor.models.Event event : events) {
+        for (Event event : events) {
             if (event.isTrafficCausing()) trafficCausingEvents.add(event);
             if (event.isInteresting()) interestingEvents.add(event);
         }
@@ -56,7 +55,7 @@ public class TextMessageService {
         return completeMessage;
     }
 
-    private static String createTrafficCausingMessage(ArrayList<com.ColumbusEventAlertService.refactor.models.Event> trafficCausingEvents, String format) {
+    private static String createTrafficCausingMessage(ArrayList<Event> trafficCausingEvents, String format) {
         if (trafficCausingEvents.isEmpty()) {
             return "Smooth sailing today! No events causing major traffic concerns.";
         }

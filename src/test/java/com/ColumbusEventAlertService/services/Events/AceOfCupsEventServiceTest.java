@@ -1,9 +1,9 @@
 package com.ColumbusEventAlertService.services.Events;
 
-import com.ColumbusEventAlertService.models.Event;
-import com.ColumbusEventAlertService.services.JsoupService;
-import com.ColumbusEventAlertService.services.events.AceOfCupsEventService;
-import com.ColumbusEventAlertService.utils.DateUtil;
+import com.ColumbusEventAlertService.truncated.models.Event;
+import com.ColumbusEventAlertService.truncated.services.JsoupService;
+import com.ColumbusEventAlertService.truncated.services.events.AceOfCupsEventService;
+import com.ColumbusEventAlertService.truncated.utils.DateUtil;
 import org.jsoup.Connection;
 import org.jsoup.nodes.Document;
 import org.junit.jupiter.api.Test;

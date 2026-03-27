@@ -1,5 +1,6 @@
 package com.ColumbusEventAlertService.utils;
 
+import com.ColumbusEventAlertService.truncated.utils.DynamoDBReader;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;

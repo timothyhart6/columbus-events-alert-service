@@ -1,8 +1,7 @@
 package com.ColumbusEventAlertService.services;
 
-import com.ColumbusEventAlertService.refactor.models.Event;
-import com.ColumbusEventAlertService.refactor.services.EventAggregatorService;
-import com.ColumbusEventAlertService.services.smsProviders.TwilioService;
+import com.ColumbusEventAlertService.models.Event;
+import com.ColumbusEventAlertService.truncated.services.smsProviders.TwilioService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

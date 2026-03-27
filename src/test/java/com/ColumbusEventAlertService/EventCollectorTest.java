@@ -1,9 +1,10 @@
 package com.ColumbusEventAlertService;
 
-import com.ColumbusEventAlertService.models.Event;
-import com.ColumbusEventAlertService.services.events.*;
-import com.ColumbusEventAlertService.utils.DateUtil;
-import com.ColumbusEventAlertService.utils.DynamoDBReader;
+import com.ColumbusEventAlertService.truncated.EventCollector;
+import com.ColumbusEventAlertService.truncated.models.Event;
+import com.ColumbusEventAlertService.truncated.services.events.*;
+import com.ColumbusEventAlertService.truncated.utils.DateUtil;
+import com.ColumbusEventAlertService.truncated.utils.DynamoDBReader;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

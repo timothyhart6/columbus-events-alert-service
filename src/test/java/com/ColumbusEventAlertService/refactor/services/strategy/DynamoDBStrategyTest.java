@@ -1,7 +1,8 @@
 package com.ColumbusEventAlertService.refactor.services.strategy;
 
-import com.ColumbusEventAlertService.refactor.exception.EventFetchException;
-import com.ColumbusEventAlertService.refactor.models.Event;
+import com.ColumbusEventAlertService.exception.EventFetchException;
+import com.ColumbusEventAlertService.models.Event;
+import com.ColumbusEventAlertService.services.strategy.DynamoDBStrategy;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

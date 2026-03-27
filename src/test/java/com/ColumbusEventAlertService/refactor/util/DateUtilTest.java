@@ -1,5 +1,6 @@
 package com.ColumbusEventAlertService.refactor.util;
 
+import com.ColumbusEventAlertService.util.DateUtil;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
