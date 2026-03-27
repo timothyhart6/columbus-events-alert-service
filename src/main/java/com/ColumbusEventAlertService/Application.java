@@ -10,7 +10,7 @@ import org.springframework.context.ApplicationContext;
 @Slf4j
 public class Application {
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws Exception {
 		log.info("Application starting...");
 
 		ApplicationContext context = SpringApplication.run(Application.class, args);
@@ -21,6 +21,7 @@ public class Application {
 
 			TextMessageService textMessageService = context.getBean(TextMessageService.class);
 			textMessageService.sendTodaysEvents();
+
 		}
 	}
 }

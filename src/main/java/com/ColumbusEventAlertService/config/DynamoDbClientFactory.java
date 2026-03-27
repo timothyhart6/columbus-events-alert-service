@@ -1,17 +1,22 @@
-package com.ColumbusEventAlertService;
+package com.ColumbusEventAlertService.config;
 
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
 import software.amazon.awssdk.auth.credentials.ProfileCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 
+@Configuration
 public class DynamoDbClientFactory {
-    public static DynamoDbClient createClient() {
+
+    @Bean
+    public static DynamoDbClient dynamoDbClient() {
         return DynamoDbClient.builder()
                 .credentialsProvider(isRunningLocally()
-                        ? ProfileCredentialsProvider.create("local") // Use "local" profile when running locally
-                        : DefaultCredentialsProvider.create()) // Use default AWS credentials in Lambda
-                .region(Region.US_EAST_1) // Set your AWS region
+                        ? ProfileCredentialsProvider.create("local")
+                        : DefaultCredentialsProvider.create())
+                .region(Region.US_EAST_1)
                 .build();
     }
 
