@@ -3,7 +3,7 @@ package com.ColumbusEventAlertService.refactor.services;
 import com.ColumbusEventAlertService.exception.EventFetchException;
 import com.ColumbusEventAlertService.models.Event;
 import com.ColumbusEventAlertService.services.EventAggregatorService;
-import com.ColumbusEventAlertService.strategy.EventSourceStrategy;
+import com.ColumbusEventAlertService.services.strategy.EventSourceStrategy;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 

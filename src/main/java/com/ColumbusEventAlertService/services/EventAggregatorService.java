@@ -2,7 +2,7 @@ package com.ColumbusEventAlertService.services;
 
 import com.ColumbusEventAlertService.exception.EventFetchException;
 import com.ColumbusEventAlertService.models.Event;
-import com.ColumbusEventAlertService.strategy.EventSourceStrategy;
+import com.ColumbusEventAlertService.services.strategy.EventSourceStrategy;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
