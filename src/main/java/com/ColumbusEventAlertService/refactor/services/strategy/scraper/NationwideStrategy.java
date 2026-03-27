@@ -3,17 +3,18 @@ package com.ColumbusEventAlertService.refactor.services.strategy.scraper;
 import com.ColumbusEventAlertService.refactor.exception.EventFetchException;
 import com.ColumbusEventAlertService.refactor.models.Event;
 import lombok.extern.slf4j.Slf4j;
+import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
 @Slf4j
-@Component
+//@Component
 public class NationwideStrategy extends AbstractWebScraperStrategy {
 
     public NationwideStrategy(
@@ -22,12 +23,20 @@ public class NationwideStrategy extends AbstractWebScraperStrategy {
         super(sourceName, locationUrl);
     }
 
+    @Override
+    Document fetchDocument() throws IOException {
+        return Jsoup.connect(locationUrl)
+                .userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/101.0.4951.54 Safari/537.36")
+                .header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8")
+                .get();
+    }
+
     // TODO: verify this container selector against Nationwide Arena's actual HTML
     @Override
     protected Elements findAllElements(Document document) {
         Elements events = new Elements();
         try {
-            events = document.select(".m-eventsList__item");
+            events = document.select(".eventItem");
             if (events.isEmpty()) {
                 log.info("No events found for {}", getSourceName());
             }
@@ -65,7 +74,7 @@ public class NationwideStrategy extends AbstractWebScraperStrategy {
     }
 
     private String extractEventName(Element element) throws EventFetchException {
-        Element titleElement = element.selectFirst(".title-withTagline");
+        Element titleElement = element.selectFirst(".title");
         if (titleElement == null) {
             throw new EventFetchException(
                     getSourceName(),
