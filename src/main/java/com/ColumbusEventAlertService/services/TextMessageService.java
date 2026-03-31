@@ -59,17 +59,19 @@ public class TextMessageService {
 
     private static String createTrafficCausingMessage(ArrayList<Event> trafficCausingEvents) {
         if (trafficCausingEvents.isEmpty()) {
-            return "Smooth sailing today! No events causing major traffic concerns.";
+            return "No traffic causing events today.";
         }
 
-        String titleText = "AHHH TRAFFIC ALERT!!\n\n";
+        String titleText = "TRAFFIC CAUSING EVENTS:\n\n";
         String trafficCausingMessage = trafficCausingEvents.stream()
                 .map(event -> {
-                    String line = "- " + event.getName() + "\n" + event.getLocationName();
+                    StringBuilder sb = new StringBuilder();
+                    sb.append("😠 ").append(event.getName()).append("\n");
+                    sb.append("📍 ").append(event.getLocationName());
                     if (event.getTime() != null && !event.getTime().isBlank()) {
-                        line += "\n" + event.getTime();
+                        sb.append("\n🕐 ").append(event.getTime());
                     }
-                    return line;
+                    return sb.toString();
                 })
                 .collect(Collectors.joining("\n\n"));
         return titleText + trafficCausingMessage;
@@ -77,16 +79,18 @@ public class TextMessageService {
 
     private static String getInterestingEventsMessage(ArrayList<Event> interestingEvents) {
         if (interestingEvents.isEmpty()) {
-            return "No reason to leave home today!";
+            return "No known interesting events today";
         }
-        String titleText = "THESE SHOWS MIGHT BE FUN!\n\n";
+        String titleText = "INTERESTING EVENTS:\n\n";
         String interestingEventsMessage = interestingEvents.stream()
                 .map(event -> {
-                    String line = "- " + event.getName() + "\n" + event.getLocationName();
+                    StringBuilder sb = new StringBuilder();
+                    sb.append("🎸 ").append(event.getName()).append("\n");
+                    sb.append("📍 ").append(event.getLocationName());
                     if (event.getTime() != null && !event.getTime().isBlank()) {
-                        line += "\n" + event.getTime();
+                        sb.append("\n🕐 ").append(event.getTime());
                     }
-                    return line;
+                    return sb.toString();
                 })
                 .collect(Collectors.joining("\n\n"));
         return titleText + interestingEventsMessage;

@@ -12,8 +12,8 @@ public class TwilioService implements SmsProviderService {
 
     public void sendTextMessage(String messageText) {
         Twilio.init(System.getenv("TWILIO_ACCOUNT_SID"), System.getenv("TWILIO_AUTH_TOKEN"));
-        String toPhoneNumber = System.getenv("TESTING_PHONE_NUMBER");
-        String fromPhoneNumber = System.getenv("TWILIO_PHONE_NUMBER");
+        String toPhoneNumber = System.getenv("TO_PHONE_NUMBER");
+        String fromPhoneNumber = System.getenv("FROM_PHONE_NUMBER");
 
         Message message = Message.creator(
                         new com.twilio.type.PhoneNumber(toPhoneNumber),
