@@ -42,9 +42,8 @@ public class NewportStrategy extends AbstractWebScraperStrategy {
             LocalDate eventDate = extractEventDate(dateText);
 
             String eventTime = null;
-            Elements timeElements = element.select(".featured-event .doors-time");
-            if (!timeElements.isEmpty()) {
-                eventTime = timeElements.get(0).text().trim();
+            if(dateTimeElements.size() > 1) {
+                eventTime = dateTimeElements.get(1).text().trim();
             }
 
             return Event.builder()
