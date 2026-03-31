@@ -14,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class DateUtilTest {
 
     private static final DateTimeFormatter MONTH_DAY = DateTimeFormatter.ofPattern("MMMM d");
-
+ 
     @ParameterizedTest
     @ValueSource(strings = {"January 1", "February 20", "July 10", "December 31"})
     @DisplayName("should parse valid month-day dates")
