@@ -12,7 +12,7 @@ import java.time.format.DateTimeFormatter;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class DateUtilTest {
-
+    
     private static final DateTimeFormatter MONTH_DAY = DateTimeFormatter.ofPattern("MMMM d");
  
     @ParameterizedTest
