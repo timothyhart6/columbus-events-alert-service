@@ -24,7 +24,7 @@ import java.util.Optional;
 @Component
 public class DynamoDBStrategy implements EventSourceStrategy {
 
-    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ISO_LOCAL_DATE;
+    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("MM-dd-yyyy");
 
     private final DynamoDbClient dynamoDbClient;
     private final String tableName;
@@ -123,7 +123,7 @@ public class DynamoDBStrategy implements EventSourceStrategy {
 
     public List<Map<String, AttributeValue>> scanDBForCurrentDayEvents() {
         ZoneId zone = ZoneId.of("America/New_York");
-        String stringCurrentDate = Instant.now().atZone(zone).format(DateTimeFormatter.ISO_LOCAL_DATE);
+        String stringCurrentDate = Instant.now().atZone(zone).format(DATE_FORMATTER);
 
         // Create the scan request with a filter expression to match today's date
         ScanRequest scanRequest = ScanRequest.builder()

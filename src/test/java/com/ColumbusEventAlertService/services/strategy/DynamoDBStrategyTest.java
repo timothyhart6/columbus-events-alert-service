@@ -14,6 +14,7 @@ import software.amazon.awssdk.services.dynamodb.model.ScanRequest;
 import software.amazon.awssdk.services.dynamodb.model.ScanResponse;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -40,7 +41,7 @@ public class DynamoDBStrategyTest {
     @Test
     void mapEvent_mapsAllFields_whenItemIsComplete() throws EventFetchException {
         Map<String, AttributeValue> item = buildItem(
-                "Nationwide Arena", "Hockey Game", "2025-06-15", "19:00", true, false
+                "Nationwide Arena", "Hockey Game", "06-15-2025", "19:00", true, false
         );
 
         Event event = strategy.mapEvent(item);
@@ -56,7 +57,7 @@ public class DynamoDBStrategyTest {
     @Test
     void mapEvent_defaultsToTrue_whenTrafficAndInterestingFieldsMissing() throws EventFetchException {
         Map<String, AttributeValue> item = buildItem(
-                "Venue", "Concert", "2025-06-15", null, null, null
+                "Venue", "Concert", "06-15-2025", null, null, null
         );
 
         Event event = strategy.mapEvent(item);
@@ -68,7 +69,7 @@ public class DynamoDBStrategyTest {
     @Test
     void mapEvent_throwsEventFetchException_whenLocationNameMissing() {
         Map<String, AttributeValue> item = buildItem(
-                null, "Hockey Game", "2025-06-15", "19:00", true, false
+                null, "Hockey Game", "06-15-2025", "19:00", true, false
         );
 
         EventFetchException ex = assertThrows(EventFetchException.class,
@@ -79,7 +80,7 @@ public class DynamoDBStrategyTest {
     @Test
     void mapEvent_throwsEventFetchException_whenEventNameMissing() {
         Map<String, AttributeValue> item = buildItem(
-                "Nationwide Arena", null, "2025-06-15", "19:00", true, false
+                "Nationwide Arena", null, "06-15-2025", "19:00", true, false
         );
 
         assertThrows(EventFetchException.class, () -> strategy.mapEvent(item));
@@ -110,11 +111,12 @@ public class DynamoDBStrategyTest {
     @Test
     void fetchCurrentDayEvents_returnsMultipleEvents_whenMultipleItemsFound() throws EventFetchException {
         doReturn(false).when(strategy).isRunningLocally();
+        String today = LocalDate.now().format(DateTimeFormatter.ofPattern("MM-dd-yyyy"));
         Map<String, AttributeValue> item1 = buildItem(
-                "Nationwide Arena", "Hockey Game", LocalDate.now().toString(), "19:00", true, false
+                "Nationwide Arena", "Hockey Game", today, "19:00", true, false
         );
         Map<String, AttributeValue> item2 = buildItem(
-                "Schottenstein Center", "Concert", LocalDate.now().toString(), "20:00", false, true
+                "Schottenstein Center", "Concert", today, "20:00", false, true
         );
 
         when(dynamoDbClient.scan(any(ScanRequest.class)))
@@ -148,15 +150,15 @@ public class DynamoDBStrategyTest {
     }
 
     @Test
-    void parseDate_returnsCorrectDate_whenValidISOFormat() throws EventFetchException {
-        LocalDate result = DynamoDBStrategy.parseDate("2025-06-15");
+    void parseDate_returnsCorrectDate_whenValidMMddyyyyFormat() throws EventFetchException {
+        LocalDate result = DynamoDBStrategy.parseDate("06-15-2025");
         assertEquals(LocalDate.of(2025, 6, 15), result);
     }
 
     @Test
     void parseDate_throwsEventFetchException_whenInvalidFormat() {
         EventFetchException ex = assertThrows(EventFetchException.class,
-                () -> DynamoDBStrategy.parseDate("11-06-2025"));
+                () -> DynamoDBStrategy.parseDate("2025-06-15"));
         assertEquals(EventFetchException.ErrorType.PARSING_ERROR, ex.getErrorType());
     }
 
