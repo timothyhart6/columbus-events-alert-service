@@ -2,6 +2,7 @@ package com.ColumbusEventAlertService.services.strategy;
 
 import com.ColumbusEventAlertService.exception.EventFetchException;
 import com.ColumbusEventAlertService.models.Event;
+import com.ColumbusEventAlertService.services.strategy.database.DynamoDBStrategy;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
