@@ -8,14 +8,13 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
 @Slf4j
-@Component
+//@Component
 public class NationwideStrategy extends AbstractWebScraperStrategy {
 
     public NationwideStrategy(
