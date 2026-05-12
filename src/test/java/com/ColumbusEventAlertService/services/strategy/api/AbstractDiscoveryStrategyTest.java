@@ -224,7 +224,7 @@ public class AbstractDiscoveryStrategyTest {
 
     static class TestDiscoveryStrategy extends AbstractDiscoveryStrategy {
         TestDiscoveryStrategy(String venueName, String venueId, HttpClient httpClient) {
-            super(venueName, venueId, httpClient);
+            super(venueName, venueId, true, false, httpClient);
         }
     }
 }

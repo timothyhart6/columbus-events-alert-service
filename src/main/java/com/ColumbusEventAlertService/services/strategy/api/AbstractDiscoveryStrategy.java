@@ -24,6 +24,8 @@ public abstract class AbstractDiscoveryStrategy implements EventSourceStrategy {
 
     private final String venueName;
     private final String venueId;
+    private final boolean trafficCausing;
+    private final boolean interesting;
 
     @Value("${api.discovery.key}")
     private String apiKey;
@@ -34,13 +36,15 @@ public abstract class AbstractDiscoveryStrategy implements EventSourceStrategy {
     private final HttpClient httpClient;
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
-    public AbstractDiscoveryStrategy(String venueName, String venueId) {
-        this(venueName, venueId, HttpClient.newHttpClient());
+    public AbstractDiscoveryStrategy(String venueName, String venueId, boolean trafficCausing, boolean interesting) {
+        this(venueName, venueId, trafficCausing, interesting, HttpClient.newHttpClient());
     }
 
-    AbstractDiscoveryStrategy(String venueName, String venueId, HttpClient httpClient) {
+    AbstractDiscoveryStrategy(String venueName, String venueId, boolean trafficCausing, boolean interesting, HttpClient httpClient) {
         this.venueName = venueName;
         this.venueId = venueId;
+        this.trafficCausing = trafficCausing;
+        this.interesting = interesting;
         this.httpClient = httpClient;
     }
 
@@ -110,6 +114,8 @@ public abstract class AbstractDiscoveryStrategy implements EventSourceStrategy {
                             .locationName(venueName)
                             .date(eventDate)
                             .time(localTime)
+                            .trafficCausing(trafficCausing)
+                            .interesting(interesting)
                             .build());
                 }
             }

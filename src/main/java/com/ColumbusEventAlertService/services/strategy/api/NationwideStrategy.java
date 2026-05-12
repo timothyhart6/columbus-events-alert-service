@@ -9,7 +9,7 @@ public class NationwideStrategy extends AbstractDiscoveryStrategy{
     public NationwideStrategy(
             @Value("${api.discovery.nationwide.source-name}") String venueName,
             @Value("${api.discovery.nationwide.venue-id}") String venueId) {
-        super(venueName, venueId);
+        super(venueName, venueId, true, false);
     }
 
 }
