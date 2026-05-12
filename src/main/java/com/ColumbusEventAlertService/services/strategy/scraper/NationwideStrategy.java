@@ -8,14 +8,15 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
+/*
+* This class is not being replaced by the discovery api. Will keep this class for now, until the api class proves to be sufficient.*/
 @Slf4j
-@Component
+//@Component
 public class NationwideStrategy extends AbstractWebScraperStrategy {
 
     public NationwideStrategy(

@@ -1,4 +1,4 @@
-package com.ColumbusEventAlertService.services.strategy;
+package com.ColumbusEventAlertService.services.strategy.database;
 
 import com.ColumbusEventAlertService.exception.EventFetchException;
 import com.ColumbusEventAlertService.models.Event;
