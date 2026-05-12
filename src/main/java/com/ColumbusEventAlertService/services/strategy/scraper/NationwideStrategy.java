@@ -13,6 +13,8 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
+/*
+* This class is not being replaced by the discovery api. Will keep this class for now, until the api class proves to be sufficient.*/
 @Slf4j
 //@Component
 public class NationwideStrategy extends AbstractWebScraperStrategy {
