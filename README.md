@@ -4,9 +4,9 @@
   - Sends both events I'm interested in, and events that potentially cause traffic (to know where to avoid driving)
 - AWS Lambda runs daily at 9am EST which executes this application. 
 - Events with a date of today are fetched several ways:
-- - DynamoDB table, populated by google form manual entries (Ex: Comfest, Cap City Marathon)
-- - Web scraping venue websites (Ex: Kemba Live, Ace of Cups)
-- - Discovery API (Ex: Crew Stadium, OSU Stadium, Convention Center)
+  - DynamoDB table, populated by google form manual entries (Ex: Comfest, Cap City Marathon)
+  - Web scraping venue websites (Ex: Kemba Live, Ace of Cups)
+  - Discovery API (Ex: Crew Stadium, OSU Stadium, Convention Center)
 
 ## Purpose
 - This Application is a pet project to help inform me of what is going on in my city, as well as an exercise to hone my Developer skills.
